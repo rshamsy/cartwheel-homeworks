@@ -18,15 +18,53 @@ They are marked xfail and flip to passing as you implement each function.
 
 from __future__ import annotations
 
+import difflib
+import re
 from typing import Any
 
 from agent import db
-from agent.auth import AuthContext, can_cancel_order, permission_denied
+from agent.auth import AuthContext, can_cancel_order, permission_denied, can_view_order
 from agent.helpcenter import load_policy_docs
 from agent.killswitch import kill_switch
 
 MAX_SEARCH_LIMIT = 25
 DEFAULT_ORDER_LIMIT = 20
+
+# find_order tuning. The scan limit is deliberately far above DEFAULT_ORDER_LIMIT
+# so a shopper's whole history is searchable, not just the 20 most recent.
+FIND_ORDER_MAX_RESULTS = 5
+FIND_ORDER_SCAN_LIMIT = 1000
+FIND_ORDER_MATCH_THRESHOLD = 0.5
+
+_WORD_RE = re.compile(r"[a-z0-9]+")
+
+
+def _words(text: str) -> set[str]:
+    """Lowercase word tokens of at least three characters."""
+    return {w for w in _WORD_RE.findall(text.lower()) if len(w) >= 3}
+
+
+def _title_match_score(query: str, title: str) -> float:
+    """How well a natural-language query matches a product title, 0.0-1.0.
+
+    Three tiers, so that "Heavy-Duty Vase", "vase I bought last week", and a
+    misspelling like "vases" all find the same order:
+      1.0            the query appears verbatim in the title
+      0.5 to 1.0     the query and title share words, scaled by how much of
+                     the title those shared words cover
+      character ratio  otherwise, so near-misses and plurals still score
+    """
+    q = query.lower().strip()
+    t = title.lower()
+    if not q or not t:
+        return 0.0
+    if q in t:
+        return 1.0
+    title_words = _words(t)
+    shared = _words(q) & title_words
+    if shared:
+        return 0.5 + 0.5 * len(shared) / len(title_words)
+    return difflib.SequenceMatcher(None, t, q).ratio()
 
 
 def get_policy(ctx: AuthContext, policy_id: str) -> dict[str, Any]:
@@ -52,8 +90,33 @@ def get_policy(ctx: AuthContext, policy_id: str) -> dict[str, Any]:
     Implementation notes:
         agent.helpcenter.load_policy_docs() returns every parsed doc.
     """
+    
+    all_policy_docs = load_policy_docs()
+    policy = None
+
+    for d in all_policy_docs:
+        if d.policy_id == policy_id: 
+            policy = d
+            break
+
+    if policy is None:
+        return {
+            "ok": False, 
+            "error": "not_found",
+            "reason": f"{policy_id} not found"
+        }
+    else:
+        return { 
+            "ok": True,
+            "policy_id": policy.policy_id,
+            "title": policy.title, 
+            "audience": policy.audience, 
+            "body": policy.body
+        }
+
+        
     ### YOUR CODE HERE (HW1)
-    raise NotImplementedError("HW1: implement get_policy")
+    # raise NotImplementedError("HW1: implement get_policy")
 
 
 def search_products(
@@ -96,7 +159,63 @@ def search_products(
         Use `with db.connection() as conn:` to close the database automatically.
     """
     ### YOUR CODE HERE (HW1)
-    raise NotImplementedError("HW1: implement search_products")
+    query = query.strip()
+    if not query:
+        return {
+            "ok": False,
+            "error": "invalid_argument",
+            "reason": "empty query provided",
+        }
+
+    if max_price_usd is not None and max_price_usd <= 0:
+        return {
+            "ok": False,
+            "error": "invalid_argument",
+            "reason": f"max_price_usd must be positive, got {max_price_usd}",
+        }
+
+    limit = max(1, min(limit, MAX_SEARCH_LIMIT))
+
+    with db.connection() as conn:
+        store_id = None
+        if store is not None:
+            found = db.get_store_by_name(conn, store)
+            if found is None:
+                return {
+                    "ok": False,
+                    "error": "not_found",
+                    "reason": f"no store matching '{store}'",
+                }
+            store_id = found.id
+        candidates = db.list_products(conn, store_id)
+
+    tokens = query.lower().split()
+    matches = [
+        p
+        for p in candidates
+        if all(t in f"{p.title} {p.description}".lower() for t in tokens)
+    ]
+
+    if max_price_usd is not None:
+        ceiling_cents = round(max_price_usd * 100)
+        matches = [p for p in matches if p.price_cents <= ceiling_cents]
+
+    matches.sort(key=lambda p: (p.price_cents, p.id))
+    matches = matches[:limit]
+
+    return {
+        "ok": True,
+        "products": [
+            {
+                "product_id": p.id,
+                "store_id": p.store_id,
+                "title": p.title,
+                "price_usd": p.price_usd,
+            }
+            for p in matches
+        ],
+        "count": len(matches),
+    }
 
 
 def list_my_orders(ctx: AuthContext) -> dict[str, Any]:
@@ -121,8 +240,37 @@ def list_my_orders(ctx: AuthContext) -> dict[str, Any]:
         scope is baked into which query you run. That is the point of the
         tool: the model cannot ask for someone else's orders through it.
     """
+    # is_permissioned = can_view_order(ctx = ctx, order_user_id = ctx.user_id, order_store_id = ctx.store_id)
+    # if not is_permissioned:
+    #     return {
+
+    #     }
+    orders = None
+    with db.connection() as conn: 
+        
+        if ctx.role == "shopper": 
+            orders = db.list_orders_for_user(conn = conn, user_id = ctx.user_id, limit = DEFAULT_ORDER_LIMIT)
+        
+        elif ctx.role == "merchant": 
+            orders = db.list_orders_for_store(conn = conn, store_id = ctx.store_id, limit = DEFAULT_ORDER_LIMIT)
+
+        else:
+            return {
+                "ok": False,
+                "error": "invalid_argument", 
+                "reason": "you are support staff; use get_order instead"
+            }
+    
+    orders = [o.to_public_dict() for o in orders]
+
+    return {
+        "ok": True, 
+        "orders": orders,
+        "count": len(orders)
+    }
+
     ### YOUR CODE HERE (HW1)
-    raise NotImplementedError("HW1: implement list_my_orders")
+    # raise NotImplementedError("HW1: implement list_my_orders")
 
 
 def cancel_order(ctx: AuthContext, order_id: int, reason: str) -> dict[str, Any]:
@@ -168,7 +316,35 @@ def cancel_order(ctx: AuthContext, order_id: int, reason: str) -> dict[str, Any]
     if paused is not None:
         return {"ok": False, "error": "paused", "reason": paused}
     ### YOUR CODE HERE (HW1)
-    raise NotImplementedError("HW1: implement cancel_order")
+    with db.connection() as conn:
+        order = db.get_order(conn, order_id)
+        if order is None:
+            return {
+                "ok": False,
+                "error": "not_found",
+                "reason": f"no order #{order_id}",
+            }
+
+        # Rule 1: scope, before the status rule so an out-of-scope caller
+        # learns nothing about the order's state.
+        if not can_cancel_order(ctx, order.user_id, order.store_id):
+            return permission_denied(
+                f"role '{ctx.role}' (user {ctx.user_id}) may not cancel order #{order_id}"
+            )
+
+        # Rule 2: the pre-shipment rule, for every role.
+        if order.status != "placed":
+            return {
+                "ok": False,
+                "error": "not_eligible",
+                "reason": (
+                    f"order #{order_id} has status '{order.status}'; "
+                    f"orders can be cancelled only before shipment"
+                ),
+            }
+
+        db.set_order_status(conn, order_id, "cancelled")
+        return {"ok": True, "order_id": order_id, "status": "cancelled"}
 
 
 def find_order(ctx: AuthContext, query: str) -> dict[str, Any]:
@@ -196,5 +372,47 @@ def find_order(ctx: AuthContext, query: str) -> dict[str, Any]:
         (at most 5), each as the dict returned by agent.db. If no orders
         match, return {"ok": True, "orders": []}.
     """
-    ### YOUR CODE HERE (HW1)
-    raise NotImplementedError("HW1: implement find_order")
+
+    with db.connection() as conn:
+        # Scope: which orders exist for this caller at all. The access rule is
+        # the query, not a filter applied afterwards.
+        if ctx.role == "shopper":
+            orders = db.list_orders_for_user(
+                conn, ctx.user_id, limit=FIND_ORDER_SCAN_LIMIT
+            )
+            candidates = [(o.id, o.product_id) for o in orders]
+            by_id = {o.id: o for o in orders}
+        elif ctx.role == "merchant":
+            orders = db.list_orders_for_store(
+                conn, ctx.store_id, limit=FIND_ORDER_SCAN_LIMIT
+            )
+            candidates = [(o.id, o.product_id) for o in orders]
+            by_id = {o.id: o for o in orders}
+        else:
+            # Support searches every order. agent/db.py has no "all orders"
+            # helper, so this is the one raw query. It takes no user input, so
+            # there is nothing to bind and nothing to inject.
+            rows = conn.execute(
+                "SELECT id, product_id FROM orders ORDER BY ordered_at DESC, id DESC"
+            ).fetchall()
+            candidates = [(row["id"], row["product_id"]) for row in rows]
+            by_id = {}
+
+        titles = {p.id: p.title for p in db.list_products(conn)}
+
+        scored = []
+        for order_id, product_id in candidates:
+            score = _title_match_score(query, titles.get(product_id, ""))
+            if score >= FIND_ORDER_MATCH_THRESHOLD:
+                scored.append((score, order_id))
+
+        # Best first, then lowest order id, so the same query always returns
+        # the same five orders.
+        scored.sort(key=lambda pair: (-pair[0], pair[1]))
+        top = scored[:FIND_ORDER_MAX_RESULTS]
+
+        # Only the survivors are materialised: support pays at most five
+        # lookups, the other roles already hold the objects.
+        matches = [by_id.get(order_id) or db.get_order(conn, order_id) for _, order_id in top]
+
+    return {"ok": True, "orders": [o.to_public_dict() for o in matches if o]}
