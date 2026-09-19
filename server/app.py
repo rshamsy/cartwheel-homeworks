@@ -124,7 +124,46 @@ def create_session(body: SessionCreate) -> dict[str, Any]:
     user_id, role, store_id, and issued_at.
     """
     ### YOUR CODE HERE (HW2)
-    raise NotImplementedError("HW2: implement POST /sessions")
+    if body.role not in ROLES: 
+        raise HTTPException(status_code=400)
+    
+    
+    with db.connection() as conn:
+        user_object = db.get_user(conn, int(body.user_id))
+    
+    if user_object is None: 
+        raise HTTPException(status_code=404)
+    
+    if user_object.role != body.role: 
+        raise HTTPException(status_code=403)
+    
+    # db.User names the primary key `id`; AuthContext names the same value `user_id`.
+    # Every field comes from the database row, never from `body`.
+    auth_context = AuthContext(user_id=user_object.id, role=user_object.role, store_id=user_object.store_id)
+    
+    session_id = uuid.uuid4().hex
+    _SESSIONS[session_id] = (auth_context, SQLiteSession(session_id, str(SESSIONS_DB)))
+
+    # The token is a claim *about* this session, not the identity itself. The
+    # payload is plain base64 (readable by anyone); create_token appends an HMAC
+    # so it cannot be edited without CARTWHEEL_DEV_SECRET. _authorize re-reads the
+    # real AuthContext from _SESSIONS, so these fields are never trusted for
+    # permission decisions. issued_at is recorded but not enforced: dev-only auth.
+    token = create_token(
+        {
+            "session_id": session_id,
+            "user_id": auth_context.user_id,
+            "role": auth_context.role,
+            "store_id": auth_context.store_id,
+            "issued_at": int(time.time()),
+        }
+    )
+
+    # The caller gets the ticket and the proof; the AuthContext and the
+    # conversation history stay server-side.
+    return {"session_id": session_id, "token": token}
+
+    # raise NotImplementedError("HW2: implement POST /sessions")
 
 
 def _authorize(session_id: str, authorization: str | None) -> AuthContext:
@@ -159,7 +198,68 @@ async def post_message(
     messages with role and parts fields.
     """
     ### YOUR CODE HERE (HW2)
-    raise NotImplementedError("HW2: implement the traced message endpoint")
+    # raise NotImplementedError("HW2: implement the traced message endpoint")
+
+    ctx = _authorize(session_id=session_id, authorization=authorization)
+
+    # CHANGED: dropped `model = os.environ.get("CARTWHEEL_MODEL")`. resolve_model
+    # (agent/agent.py:122) already falls back to CARTWHEEL_MODEL, then DEFAULT_MODEL.
+    # CHANGED: dropped `defenses=defenses` (undefined name). It defaults to False,
+    # which is the Module 1 agent; Module 4 is what turns the guards on.
+    agent = build_agent(ctx, model=body.model)
+    
+    # CHANGED: setup_tracing() returns a bool, not a tracer, and lifespan() already
+    # called it at startup. _tracer (line 49) is the module-level tracer to use.
+    # prompt_version() hashes the TEMPLATE, before ctx is injected, so every caller
+    # of one prompt shares a hash. That is what Module 2 groups traces by.
+    version = prompt_version()
+
+    # CHANGED: indentation (this line had 5 spaces, so the file would not parse).
+    # The SDK's spans nest under whatever span is current, so Runner.run has to sit
+    # inside this block for the whole turn to come out as one tree.
+    with _tracer.start_as_current_span("cartwheel.session_message") as span:
+        if span.is_recording():
+            span.set_attribute("cartwheel.user_role", ctx.role)
+            span.set_attribute("cartwheel.user_id", str(ctx.user_id))
+            span.set_attribute("cartwheel.prompt_version", version)
+            # CHANGED: namespaced the key, and the handout only wants it set when a
+            # nonempty scenario id was supplied (None would be rejected anyway).
+            if body.scenario_id:
+                span.set_attribute("cartwheel.scenario_id", body.scenario_id)
+            # CHANGED: attribute values must be primitives, so the OTel GenAI message
+            # shape is serialised to a JSON string rather than passed as an object.
+            span.set_attribute(
+                "gen_ai.input.messages",
+                json.dumps(
+                    [{"role": "user", "parts": [{"type": "text", "content": body.message}]}]
+                ),
+            )
+                
+        # CHANGED: de-indented out of `if span.is_recording()`. Nested there, the agent
+        # would never run with tracing switched off.
+        # CHANGED: session=... is the SQLiteSession at index [1] of the _SESSIONS
+        # tuple; index [0] is the AuthContext that _authorize already returned.
+        result = await Runner.run(
+            agent,
+            body.message,
+            session=_SESSIONS[session_id][1],
+            context=ctx,
+            max_turns=MAX_TURNS,
+        )
+        # CHANGED: result is a RunResult object; the assistant's text is final_output.
+        reply = result.final_output
+
+        # Set after the run: this is the first moment the value exists.
+        if span.is_recording():
+            span.set_attribute(
+                "gen_ai.output.messages",
+                json.dumps(
+                    [{"role": "assistant", "parts": [{"type": "text", "content": reply}]}]
+                ),
+            )
+
+    # ADDED: the handout's response contract.
+    return {"session_id": session_id, "reply": reply, "prompt_version": version}
 
 
 @app.get("/health")

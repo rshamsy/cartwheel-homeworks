@@ -17,3 +17,15 @@ __pycache__/
 *.pyc
 .venv/
 .pytest_cache/
+
+# Claude sandbox
+.claude/settings.local.json
+.sandbox-state.json
+.sandbox-worktree.override.yml
+
+.claude-plugins/
+.claude/
+.dockerignore
+Dockerfile.claude-sandbox
+docker-compose.sandbox.yml
+sandbox.sh

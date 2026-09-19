@@ -381,28 +381,17 @@ def find_order(ctx: AuthContext, query: str) -> dict[str, Any]:
 
     with db.connection() as conn:
         # Scope: which orders exist for this caller at all. The access rule is
-        # the query, not a filter applied afterwards.
+        # the query, not a filter applied afterwards. The helper returns the
+        # complete scope, newest first with order id breaking ties, and
+        # deliberately imposes no limit: matching has to precede truncation.
         if ctx.role == "shopper":
-            orders = db.list_orders_for_user(
-                conn, ctx.user_id, limit=FIND_ORDER_SCAN_LIMIT
-            )
-            candidates = [(o.id, o.product_id) for o in orders]
-            by_id = {o.id: o for o in orders}
+            orders = db.list_order_search_candidates(conn, user_id=ctx.user_id)
         elif ctx.role == "merchant":
-            orders = db.list_orders_for_store(
-                conn, ctx.store_id, limit=FIND_ORDER_SCAN_LIMIT
-            )
-            candidates = [(o.id, o.product_id) for o in orders]
-            by_id = {o.id: o for o in orders}
+            orders = db.list_order_search_candidates(conn, store_id=ctx.store_id)
         else:
-            # Support searches every order. agent/db.py has no "all orders"
-            # helper, so this is the one raw query. It takes no user input, so
-            # there is nothing to bind and nothing to inject.
-            rows = conn.execute(
-                "SELECT id, product_id FROM orders ORDER BY ordered_at DESC, id DESC"
-            ).fetchall()
-            candidates = [(row["id"], row["product_id"]) for row in rows]
-            by_id = {}
+            orders = db.list_order_search_candidates(conn, all_orders=True)
+        candidates = [(o.id, o.product_id) for o in orders]
+        by_id = {o.id: o for o in orders}
 
         titles = {p.id: p.title for p in db.list_products(conn)}
 
@@ -412,9 +401,9 @@ def find_order(ctx: AuthContext, query: str) -> dict[str, Any]:
             if score >= FIND_ORDER_MATCH_THRESHOLD:
                 scored.append((score, order_id))
 
-        # Best first, then lowest order id, so the same query always returns
-        # the same five orders.
-        scored.sort(key=lambda pair: (-pair[0], pair[1]))
+        # Best first. The sort is stable, so orders that score the same keep
+        # the helper's order: newest first, highest order id breaking ties.
+        scored.sort(key=lambda pair: -pair[0])
         top = scored[:FIND_ORDER_MAX_RESULTS]
 
         # Only the survivors are materialised: support pays at most five
