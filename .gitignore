@@ -33,3 +33,5 @@ sandbox.sh
 =======
 scenarios/demo_pilot_gt.json
 >>>>>>> upstream/main
+.sessions.db*
+sandbox.sh.bak-*
