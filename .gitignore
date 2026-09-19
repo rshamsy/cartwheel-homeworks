@@ -17,6 +17,7 @@ __pycache__/
 *.pyc
 .venv/
 .pytest_cache/
+<<<<<<< HEAD
 
 # Claude sandbox
 .claude/settings.local.json
@@ -29,3 +30,6 @@ __pycache__/
 Dockerfile.claude-sandbox
 docker-compose.sandbox.yml
 sandbox.sh
+=======
+scenarios/demo_pilot_gt.json
+>>>>>>> upstream/main
