@@ -109,8 +109,11 @@ def fetch_traces(
     metadata and are not substituted for the Langfuse identifier.
 
     Args:
-        tag: optionally restrict traces to a Langfuse tag. With no tag, retain
-            Module 1 traces carrying `cartwheel.scenario_id` metadata.
+        tag: optionally restrict traces to a Langfuse tag. Defaults to the
+            ``CARTWHEEL_TRACE_TAG`` environment variable, which separates an
+            uploaded reference bundle from other traces in the same project.
+            With no tag, retain Module 1 traces carrying
+            `cartwheel.scenario_id` metadata.
         limit: maximum number of traces to pull (paginated under the hood).
         client: an existing Langfuse client (tests/seeds reuse one).
 
@@ -120,6 +123,7 @@ def fetch_traces(
         and the observation fields needed by later monitoring jobs.
     """
     lf = client or _client()
+    tag = tag or os.environ.get("CARTWHEEL_TRACE_TAG") or None
     tags = [tag] if tag else None
 
     collected: list[Any] = []
