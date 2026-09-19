@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cartwheel review</title>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">Cartwheel <span>trace review</span></div>
+  <nav class="counter" aria-label="Conversation navigation">
+    <button id="prev" title="Previous conversation (←)">◀</button>
+    <span>Conversation <input id="pos" type="number" min="1" aria-label="Jump to conversation"> / <b id="total">0</b></span>
+    <button id="next" title="Next conversation (→)">▶</button>
+    <button id="next-open" class="ghost" title="Next conversation with an unreviewed turn">Next unreviewed ⏭</button>
+  </nav>
+  <div class="progress" id="progress"></div>
+  <button id="spec-btn" class="ghost">SPEC ▸</button>
+</header>
+
+<div class="layout">
+  <aside class="queue" id="queue" aria-label="Review queue"></aside>
+  <main class="doc" id="doc">
+    <div class="conversation" id="conversation"></div>
+    <div class="margin" id="margin" aria-label="Comments"></div>
+  </main>
+</div>
+
+<button id="sel-comment" class="sel-comment" hidden>💬 Comment</button>
+
+<aside class="spec" id="spec" hidden>
+  <div class="spec-head">
+    <input id="spec-q" placeholder="Search SPEC (e.g. RESP, refund)">
+    <button id="spec-close" class="ghost">✕</button>
+  </div>
+  <p class="hint">Click an ID to copy it into your clipboard.</p>
+  <div id="spec-list"></div>
+</aside>
+
+<div class="toast" id="toast" hidden></div>
+<script src="/app.js"></script>
+</body>
+</html>
