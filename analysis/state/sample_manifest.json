@@ -1,0 +1,290 @@
+{
+  "source": "traces/support_traces.json",
+  "unit": "conversation (all turns of one cartwheel.session_id); counts are traces",
+  "batches": [
+    {
+      "id": "1a",
+      "name": "Batch 1a \u00b7 random",
+      "method": "uniform random conversations until 15 traces",
+      "seed": 7,
+      "created_at": "2026-09-19T13:13:30+00:00",
+      "conversation_count": 9,
+      "trace_count": 15,
+      "trace_ids": [
+        "fe9717031b9313be99cde3c4bcfa7700",
+        "42ee07a255ba3bec49cf4b9d31ece0f7",
+        "b3e1af7cbf217c01d007a28abdd190c1",
+        "77fb8d770a59f030ff7ca4246e0c4d1c",
+        "93a973a3d845c1b4761e7e31c567ef6e",
+        "45cd21196bed1e4db29545ee4fb62004",
+        "76f849d225d9529e4b2bf670b8dbbd43",
+        "01e428325442e5b5e55d972c007448b4",
+        "8dac88f3730927d1f3236d2a7af55fa7",
+        "832ef0bc48989a9e9c047feaa9dcea19",
+        "b9fee3e0c1e1843c6a6bc4c3034c968c",
+        "ef7942dc762a4cac3ec0a0e6297f408f",
+        "ec2cb5e4decc3d2ae19c800537fbe5f5",
+        "b96c08169d7fbb975c0013ae81f19c44",
+        "b9dcd6f163e293ba284667d94e89c084"
+      ],
+      "picks": [
+        {
+          "session_id": "d422661398b44a3d9cd8e6d36a7d8287",
+          "scenario_id": "full-034",
+          "role": "support",
+          "trace_ids": [
+            "fe9717031b9313be99cde3c4bcfa7700"
+          ],
+          "reason": "uniform random draw"
+        },
+        {
+          "session_id": "4ef894bf834d46dab3c7b7e0d104606e",
+          "scenario_id": "full-026",
+          "role": "merchant",
+          "trace_ids": [
+            "42ee07a255ba3bec49cf4b9d31ece0f7"
+          ],
+          "reason": "uniform random draw"
+        },
+        {
+          "session_id": "8985b6bffb0e4617a5a4f1f438b3746d",
+          "scenario_id": "full-100",
+          "role": "shopper",
+          "trace_ids": [
+            "b3e1af7cbf217c01d007a28abdd190c1",
+            "77fb8d770a59f030ff7ca4246e0c4d1c"
+          ],
+          "reason": "uniform random draw"
+        },
+        {
+          "session_id": "8022f07896f547c688060ca3de5e3538",
+          "scenario_id": "full-085",
+          "role": "shopper",
+          "trace_ids": [
+            "93a973a3d845c1b4761e7e31c567ef6e"
+          ],
+          "reason": "uniform random draw"
+        },
+        {
+          "session_id": "8617c1be35204c1a8f271adf73bc0093",
+          "scenario_id": "full-079",
+          "role": "shopper",
+          "trace_ids": [
+            "45cd21196bed1e4db29545ee4fb62004"
+          ],
+          "reason": "uniform random draw"
+        },
+        {
+          "session_id": "3c2459e9c02d41ceb7a27886f7dd5a97",
+          "scenario_id": "full-082",
+          "role": "shopper",
+          "trace_ids": [
+            "76f849d225d9529e4b2bf670b8dbbd43"
+          ],
+          "reason": "uniform random draw"
+        },
+        {
+          "session_id": "c677b9c0fbd942439ac7981c7c2f7e14",
+          "scenario_id": "full-022",
+          "role": "shopper",
+          "trace_ids": [
+            "01e428325442e5b5e55d972c007448b4"
+          ],
+          "reason": "uniform random draw"
+        },
+        {
+          "session_id": "e1d0b9b4eb2d471dab76822f883a90b2",
+          "scenario_id": "full-094",
+          "role": "shopper",
+          "trace_ids": [
+            "8dac88f3730927d1f3236d2a7af55fa7",
+            "832ef0bc48989a9e9c047feaa9dcea19",
+            "b9fee3e0c1e1843c6a6bc4c3034c968c",
+            "ef7942dc762a4cac3ec0a0e6297f408f"
+          ],
+          "reason": "uniform random draw"
+        },
+        {
+          "session_id": "4f30e8ccbc434fd180329f46a4b93cb1",
+          "scenario_id": "full-083",
+          "role": "shopper",
+          "trace_ids": [
+            "ec2cb5e4decc3d2ae19c800537fbe5f5",
+            "b96c08169d7fbb975c0013ae81f19c44",
+            "b9dcd6f163e293ba284667d94e89c084"
+          ],
+          "reason": "uniform random draw"
+        }
+      ]
+    },
+    {
+      "id": "1b",
+      "name": "Batch 1b \u00b7 cluster representatives",
+      "method": "k-means (k=15) over turn count, tool calls, distinct tools, retrieval, length; conversation nearest each centroid",
+      "seed": 7,
+      "created_at": "2026-09-19T13:13:30+00:00",
+      "conversation_count": 15,
+      "trace_count": 18,
+      "trace_ids": [
+        "e9b5c0a6f9031f3ff39c438ee99932c9",
+        "f5dd32b217b7b273d761640f63355512",
+        "75a1affa64cc74144ae2c376279866f0",
+        "7f75105b05ff7786ac981ef0bcec028d",
+        "43038b4103e677ef161008dfea0f3207",
+        "01fdb9f9a4a40c8ac10ce99778e0cd30",
+        "d07519720c50be652085b731ee9c38de",
+        "5aa1424fdc17ac65453537981f6401c8",
+        "5cce752dfee53b5c649973612a6bd8b2",
+        "9fdabc417dd1386a8cd30b0287b68aa2",
+        "281aa65c1aeab2250971bab924ca398f",
+        "b36a32784da944820f0294d47e80ca8c",
+        "5a7afbc8afe734e685213bd4b2ebd247",
+        "49c2a73b3a405c8a139f81945c3916e1",
+        "d62ba37f1c393a1b675c2910df87e089",
+        "8170f9e0a9ef2a7ac7e8971524b0ed4f",
+        "fa40a4e2c246c574daf5f26a3540e371",
+        "d8590b79bfc7dcd7d277778d1c41b7ea"
+      ],
+      "picks": [
+        {
+          "session_id": "702f6dbadbf8477baddc2b57a9af5d06",
+          "scenario_id": "full-075",
+          "role": "shopper",
+          "trace_ids": [
+            "e9b5c0a6f9031f3ff39c438ee99932c9"
+          ],
+          "reason": "nearest the centre of cluster 0 (4 conversations); 5 messages, 3 tool calls, retrieval=no"
+        },
+        {
+          "session_id": "3bc20e29c7fd4630a9755136e8c4516e",
+          "scenario_id": "full-001",
+          "role": "shopper",
+          "trace_ids": [
+            "f5dd32b217b7b273d761640f63355512"
+          ],
+          "reason": "nearest the centre of cluster 1 (16 conversations); 3 messages, 1 tool calls, retrieval=no"
+        },
+        {
+          "session_id": "cef77c5632b14fc397f682d47ca1eff3",
+          "scenario_id": "full-099",
+          "role": "support",
+          "trace_ids": [
+            "75a1affa64cc74144ae2c376279866f0"
+          ],
+          "reason": "nearest the centre of cluster 2 (10 conversations); 4 messages, 2 tool calls, retrieval=no"
+        },
+        {
+          "session_id": "f08bdf601cd7437d81f9c9538e9b5921",
+          "scenario_id": "full-040",
+          "role": "shopper",
+          "trace_ids": [
+            "7f75105b05ff7786ac981ef0bcec028d",
+            "43038b4103e677ef161008dfea0f3207"
+          ],
+          "reason": "nearest the centre of cluster 3 (4 conversations); 10 messages, 10 tool calls, retrieval=no"
+        },
+        {
+          "session_id": "d5e1bf94e6f3480aa13e3491a428cd7a",
+          "scenario_id": "full-066",
+          "role": "shopper",
+          "trace_ids": [
+            "01fdb9f9a4a40c8ac10ce99778e0cd30"
+          ],
+          "reason": "nearest the centre of cluster 4 (8 conversations); 5 messages, 5 tool calls, retrieval=yes"
+        },
+        {
+          "session_id": "a7b120c5ab514bf0924c2a1885c7be15",
+          "scenario_id": "full-042",
+          "role": "shopper",
+          "trace_ids": [
+            "d07519720c50be652085b731ee9c38de"
+          ],
+          "reason": "nearest the centre of cluster 5 (4 conversations); 7 messages, 5 tool calls, retrieval=yes"
+        },
+        {
+          "session_id": "bb94f2756d524c94930099ee38d1a6d0",
+          "scenario_id": "full-081",
+          "role": "shopper",
+          "trace_ids": [
+            "5aa1424fdc17ac65453537981f6401c8"
+          ],
+          "reason": "nearest the centre of cluster 6 (5 conversations); 7 messages, 9 tool calls, retrieval=yes"
+        },
+        {
+          "session_id": "03bb7c97874c4dc4b0543691da712d08",
+          "scenario_id": "full-062",
+          "role": "merchant",
+          "trace_ids": [
+            "5cce752dfee53b5c649973612a6bd8b2"
+          ],
+          "reason": "nearest the centre of cluster 7 (8 conversations); 4 messages, 2 tool calls, retrieval=yes"
+        },
+        {
+          "session_id": "8c1b5b231c2b4b2e9b622c2f153753bc",
+          "scenario_id": "full-049",
+          "role": "shopper",
+          "trace_ids": [
+            "9fdabc417dd1386a8cd30b0287b68aa2"
+          ],
+          "reason": "nearest the centre of cluster 8 (6 conversations); 3 messages, 1 tool calls, retrieval=no"
+        },
+        {
+          "session_id": "6c6f3311efa64362a5a41486db998595",
+          "scenario_id": "full-097",
+          "role": "support",
+          "trace_ids": [
+            "281aa65c1aeab2250971bab924ca398f"
+          ],
+          "reason": "nearest the centre of cluster 9 (7 conversations); 2 messages, 0 tool calls, retrieval=no"
+        },
+        {
+          "session_id": "29819c576b5b4a5a8ab068c8a55678ca",
+          "scenario_id": "full-048",
+          "role": "shopper",
+          "trace_ids": [
+            "b36a32784da944820f0294d47e80ca8c"
+          ],
+          "reason": "nearest the centre of cluster 10 (5 conversations); 5 messages, 6 tool calls, retrieval=yes"
+        },
+        {
+          "session_id": "5e8469f25229431ca41fda0c34ca6b8f",
+          "scenario_id": "full-009",
+          "role": "shopper",
+          "trace_ids": [
+            "5a7afbc8afe734e685213bd4b2ebd247"
+          ],
+          "reason": "nearest the centre of cluster 11 (2 conversations); 7 messages, 5 tool calls, retrieval=yes"
+        },
+        {
+          "session_id": "115f7342365a43a4a8d908f50f0ec4c9",
+          "scenario_id": "full-030",
+          "role": "merchant",
+          "trace_ids": [
+            "49c2a73b3a405c8a139f81945c3916e1"
+          ],
+          "reason": "nearest the centre of cluster 12 (6 conversations); 3 messages, 1 tool calls, retrieval=no"
+        },
+        {
+          "session_id": "677ae3f63a974d85918ee44d40507fce",
+          "scenario_id": "full-063",
+          "role": "support",
+          "trace_ids": [
+            "d62ba37f1c393a1b675c2910df87e089",
+            "8170f9e0a9ef2a7ac7e8971524b0ed4f"
+          ],
+          "reason": "nearest the centre of cluster 13 (3 conversations); 5 messages, 1 tool calls, retrieval=no"
+        },
+        {
+          "session_id": "aedd9aae49974320b3508e564e2ec123",
+          "scenario_id": "full-070",
+          "role": "shopper",
+          "trace_ids": [
+            "fa40a4e2c246c574daf5f26a3540e371",
+            "d8590b79bfc7dcd7d277778d1c41b7ea"
+          ],
+          "reason": "nearest the centre of cluster 14 (3 conversations); 10 messages, 6 tool calls, retrieval=no"
+        }
+      ]
+    }
+  ]
+}

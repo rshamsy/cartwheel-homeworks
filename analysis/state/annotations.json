@@ -1,1 +1,162 @@
-{"annotations": []}
+{
+  "annotations": [
+    {
+      "id": "c-mu8o4sirz234o",
+      "kind": "comment",
+      "author": "human",
+      "trace_id": "fe9717031b9313be99cde3c4bcfa7700",
+      "session_id": "d422661398b44a3d9cd8e6d36a7d8287",
+      "scenario_id": "full-034",
+      "anchor": {
+        "step_id": "431593778f559ec6",
+        "field": "output",
+        "start": 154,
+        "end": 203,
+        "quote": "\"refund_eligible\": false,\n    \"shipped_at\": null,"
+      },
+      "note": "The SPEC.md is not clear whether a refund-ineligible order that has not been shipped yet is eligble for cancellation; it is not clear what the cancellation policy is.",
+      "first_failure": true,
+      "created_at": "2026-09-19T17:35:43.971Z",
+      "updated_at": "2026-09-19T17:35:43.971Z",
+      "history": []
+    },
+    {
+      "id": "c-mu8oafptyzg9i",
+      "kind": "no_failure",
+      "author": "human",
+      "trace_id": "42ee07a255ba3bec49cf4b9d31ece0f7",
+      "session_id": "4ef894bf834d46dab3c7b7e0d104606e",
+      "scenario_id": "full-026",
+      "note": "no failure observed",
+      "created_at": "2026-09-19T17:40:07.313Z"
+    },
+    {
+      "id": "c-mu8oer3brb7u9",
+      "kind": "comment",
+      "author": "human",
+      "trace_id": "b3e1af7cbf217c01d007a28abdd190c1",
+      "session_id": "8985b6bffb0e4617a5a4f1f438b3746d",
+      "scenario_id": "full-100",
+      "anchor": {
+        "step_id": "50045a4989a1b587",
+        "field": "output",
+        "start": 34,
+        "end": 423,
+        "quote": "{\n      \"delivered_at\": \"2026-02-26\",\n      \"id\": 7044,\n      \"ordered_at\": \"2026-02-18\",\n      \"product_id\": 784,\n      \"product_name\": \"Handmade Pencil Set\",\n      \"quantity\": 1,\n      \"refund_eligible\": 0,\n      \"shipped_at\": \"2026-02-21\",\n      \"status\": \"delivered\",\n      \"store_id\": 20,\n      \"store_name\": \"Atlas Stationery\",\n      \"total_cents\": 27550,\n      \"user_id\": 291\n    },"
+      },
+      "note": "User specified item was an atlas, but a store with name 'atlas' whose item the user also purchased was returned first. Close match",
+      "first_failure": true,
+      "created_at": "2026-09-19T17:43:28.679Z",
+      "updated_at": "2026-09-19T17:43:28.679Z",
+      "history": []
+    },
+    {
+      "id": "c-mu8olfkumwvmy",
+      "kind": "comment",
+      "author": "human",
+      "trace_id": "93a973a3d845c1b4761e7e31c567ef6e",
+      "session_id": "8022f07896f547c688060ca3de5e3538",
+      "scenario_id": "full-085",
+      "anchor": {
+        "step_id": "7a9437c1909722cc",
+        "field": "text0",
+        "start": 68,
+        "end": 156,
+        "quote": "- **Order #:** 47  \n- **Status:** Already **cancelled**  \n- **Ordered on:** 2025-10-10  "
+      },
+      "note": "Order status is cancelled but support agent didn't explicitly state that this status change already happened,",
+      "first_failure": true,
+      "created_at": "2026-09-19T17:48:40.350Z",
+      "updated_at": "2026-09-19T17:48:40.350Z",
+      "history": []
+    },
+    {
+      "id": "c-mu8ooeotnazze",
+      "kind": "comment",
+      "author": "human",
+      "trace_id": "45cd21196bed1e4db29545ee4fb62004",
+      "session_id": "8617c1be35204c1a8f271adf73bc0093",
+      "scenario_id": "full-079",
+      "anchor": {
+        "step_id": "a2882a65d243b35f",
+        "field": "text0",
+        "start": 139,
+        "end": 251,
+        "quote": "- **Refund ID:** #580  \n- **Timing:** It will go back to your original payment method in **5–10 business days**."
+      },
+      "note": "The refund is issued before the items are actually returned; this is a missing loophole in the SPEC.md, and refunds can get processed without confirming returns, leading to fruad",
+      "first_failure": true,
+      "created_at": "2026-09-19T17:50:59.165Z",
+      "updated_at": "2026-09-19T17:50:59.165Z",
+      "history": []
+    },
+    {
+      "id": "c-mu8oveldxn808",
+      "kind": "comment",
+      "author": "human",
+      "trace_id": "76f849d225d9529e4b2bf670b8dbbd43",
+      "session_id": "3c2459e9c02d41ceb7a27886f7dd5a97",
+      "scenario_id": "full-082",
+      "anchor": {
+        "step_id": "03f6b4abb21db73f",
+        "field": null,
+        "quote": null
+      },
+      "note": "The relevant policies have been gotten, but still multiple tool calls are requested for the same issue.",
+      "first_failure": true,
+      "created_at": "2026-09-19T17:56:25.633Z",
+      "updated_at": "2026-09-19T17:56:25.633Z",
+      "history": []
+    },
+    {
+      "id": "c-mu8ovmfhce9hu",
+      "kind": "no_failure",
+      "author": "human",
+      "trace_id": "01e428325442e5b5e55d972c007448b4",
+      "session_id": "c677b9c0fbd942439ac7981c7c2f7e14",
+      "scenario_id": "full-022",
+      "note": "no failure observed",
+      "created_at": "2026-09-19T17:56:35.789Z"
+    },
+    {
+      "id": "c-mu8ozb8ulm9kl",
+      "kind": "comment",
+      "author": "human",
+      "trace_id": "8dac88f3730927d1f3236d2a7af55fa7",
+      "session_id": "e1d0b9b4eb2d471dab76822f883a90b2",
+      "scenario_id": "full-094",
+      "anchor": {
+        "step_id": "7cfdae5370171ecf",
+        "field": "text0",
+        "start": 29,
+        "end": 247,
+        "quote": "- **Order #7249**\n- **Product:** Classic Tea Sampler  \n- **Store:** Saltbox Pantry  \n- **Quantity:** 1  \n- **Total:** **$161.00**\n- **Status:** Delivered  \n- **Ordered:** June 23, 2026  \n- **Delivered:** July 1, 2026  "
+      },
+      "note": "Too much information being given to the customer to confirm an order.",
+      "first_failure": true,
+      "created_at": "2026-09-19T17:59:27.918Z",
+      "updated_at": "2026-09-19T17:59:27.918Z",
+      "history": []
+    },
+    {
+      "id": "c-mu8p0xids80g7",
+      "kind": "comment",
+      "author": "human",
+      "trace_id": "ec2cb5e4decc3d2ae19c800537fbe5f5",
+      "session_id": "4f30e8ccbc434fd180329f46a4b93cb1",
+      "scenario_id": "full-083",
+      "anchor": {
+        "step_id": "61ecfa513e79d31a",
+        "field": "text0",
+        "start": 25,
+        "end": 269,
+        "quote": "- **Order #2472**\n- **Item:** Portable Card Game  \n- **Store:** Little Fox Toys  \n- **Quantity:** 1  \n- **Total:** **$99.75**  \n- **Status:** Delivered  \n- **Ordered:** June 21, 2026  \n- **Delivered:** June 28, 2026  \n- **Refund eligible:** Yes"
+      },
+      "note": "Too much irrelevant order info that's for the system thats passed to the user to verify order",
+      "first_failure": true,
+      "created_at": "2026-09-19T18:00:43.429Z",
+      "updated_at": "2026-09-19T18:00:43.429Z",
+      "history": []
+    }
+  ]
+}
