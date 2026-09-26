@@ -1,0 +1,32 @@
+{
+  "judge_id": "uninformative_response-v1",
+  "split": "dev",
+  "tpr": 0.3333,
+  "tnr": 1.0,
+  "tpr_interval": [
+    0.1518,
+    0.5829
+  ],
+  "tnr_interval": [
+    0.8668,
+    1.0
+  ],
+  "agreement": 0.75,
+  "tp": 5,
+  "fn": 10,
+  "tn": 25,
+  "fp": 0,
+  "n": 40,
+  "disagreements": [
+    "0addfc3b4243f9a8f8156779a0296953",
+    "1e8832e926ac21fe1d0072b5f6dda115",
+    "253b82d858ffd34304854008a54f0c04",
+    "54457b2e4a73a69f85f321d47443ac30",
+    "57448adadf20cc401589000f86e9efe5",
+    "9d1f4c48f7701e41cca0825936d54154",
+    "9fdabc417dd1386a8cd30b0287b68aa2",
+    "a0e3934d53f39f808bcce6c297db6903",
+    "ec5ef32cec1f00b3262d714128f46b42",
+    "f3fb6862895cc7edea1dde6a1f2cd60a"
+  ]
+}
